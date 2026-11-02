@@ -1,0 +1,18 @@
+[project]
+name = "mx-labor-law-assistant"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Eduardo_Rdgz",email = "phys.eduardo.ra@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12, <3.13"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{include = "mx_labor_law_assistant", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
