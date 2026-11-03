@@ -10,23 +10,27 @@ def read_pdf(path: Path) -> list[str]:
      
 def clean_page(text: str) -> str:
     """Etapa 2: Eliminar encabezado y pie de página."""
-    PATTERN = r"\d+ de \d+"
+    PATTERN = r"\d+ de \d+" # r"\d+\sde\s\d+"
     match = re.search(PATTERN, text)
     if match is None:
         return text
     return text[match.end():]
     
 def join_page(pages: list[str]) -> str:
-    """Etapa 3: Un solo texto, para que ningñun artículo quede partido entre páginas."""
-    cleaned = []
-    for page in pages:
-        cleaned.append(clean_page(page))
-    return "\n".join(cleaned)
+    """Etapa 3: Un solo texto, para que ningñun artículo quede partido entre páginas."""    
+    return "\n".join([clean_page(page) for page in pages])
 
 def law_body(text: str, start: str, end:str) -> str:
     """Etapa 4: Obtener solo el intervalo """
     return text[text.find(start): text.find(end)]
 
+def cut_heading(piece: str) -> str:
+    match = re.search(r"(?m)^(T[IÍ]TULO|CAP[IÍ]TULO)", piece)
+    if match is None:
+        return piece
+    return piece[:match.start()].strip()
+    
+    
 
 if __name__ == "__main__":
     from rich import print
@@ -39,10 +43,22 @@ if __name__ == "__main__":
         start="Artículo 1o.",
         end="TRANSITORIOS"
     )
-    print(law[:300])    
-    print(law[-300:])
+    
+    positions = [a.start() for a in re.finditer(r"(?m)^Artículo\s+\d+", law)]
+    positions.append(len(law))
+
+    pieces = [law[a:b].strip() for a, b in zip(positions, positions[1:])]
+    clean = [cut_heading(piece) for piece in pieces]
+
+    print(next(x for x in clean if x.startswith("Artículo 81")))
+    print(next(x for x in clean if x.startswith("Artículo 89")))
+    print(next(x for x in clean if x.startswith("Artículo 732")))
 
 
+    
+
+
+    
     """HEADER
     LEY FEDERAL DEL TRABAJO
 
