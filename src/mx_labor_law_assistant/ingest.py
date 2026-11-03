@@ -7,8 +7,7 @@ def read_pdf(path: Path) -> list[str]:
     """Etapa 1: Un texto por página."""
     reader = pypdf.PdfReader(path)
     return  [page.extract_text() for page in reader.pages]
-    
-    
+     
 def clean_page(text: str) -> str:
     """Etapa 2: Eliminar encabezado y pie de página."""
     PATTERN = r"\d+ de \d+"
@@ -21,7 +20,7 @@ def join_page(pages: list[str]) -> str:
     """Etapa 3: Un solo texto, para que ningñun artículo quede partido entre páginas."""
     cleaned = []
     for page in pages:
-        cleaned.append(page)
+        cleaned.append(clean_page(page))
     return "\n".join(cleaned)
 
 def law_body(text: str, start: str, end:str) -> str:
