@@ -35,5 +35,5 @@ if __name__ == "__main__":
         "Artículo reformado DOF 27-12-2022."
     )
 
-    resp = ask(QUESTIONS, ARTICLE)
+    resp = ask(question=QUESTIONS, context= ARTICLE)
     print(resp)
