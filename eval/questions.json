@@ -1,0 +1,74 @@
+[
+    {
+      "id": "lft-despido-indemnizacion",
+      "type": "lft",
+      "question": "Me corrieron de la chamba sin darme ninguna razón ni papel, ¿qué me tienen que pagar?",
+      "expected": [{"law": "LFT", "article": "48"}, {"law": "LFT", "article": "50"}]
+    },
+    {
+      "id": "lft-vacaciones",
+      "type": "lft",
+      "question": "Ya cumplí un año en mi trabajo, ¿cuántos días de vacaciones me tocan?",
+      "expected": [{"law": "LFT", "article": "76"}]
+    },
+    {
+      "id": "lft-aguinaldo",
+      "type": "lft",
+      "question": "Entré a trabajar en agosto, ¿me toca aguinaldo este año o solo a los que llevan un año completo? ¿Para cuándo me lo tienen que pagar?",
+      "expected": [{"law": "LFT", "article": "87"}]
+    },
+    {
+      "id": "lft-prima-vacacional",
+      "type": "lft",
+      "question": "Mi patrón dice que cuando me voy de vacaciones solo me paga mi sueldo normal, ¿no me deben dar algo extra por vacaciones?",
+      "expected": [{"law": "LFT", "article": "80"}]
+    },
+    {
+      "id": "lft-embarazo-despido",
+      "type": "lft",
+      "question": "¿Me pueden correr o presionarme para que renuncie por estar embarazada?",
+      "expected": [{"law": "LFT", "article": "133"}]
+    },
+    {
+      "id": "lft-descanso-semanal",
+      "type": "lft",
+      "question": "¿Cuántos días a la semana me toca descansar y me los tienen que pagar o no?",
+      "expected": [{"law": "LFT", "article": "69"}]
+    },
+    {
+      "id": "cpeum-salario-minimo",
+      "type": "cpeum",
+      "question": "¿Dónde dice la Constitución que el sueldo mínimo tiene que alcanzar para vivir? ¿Es un derecho mío o nada más es una recomendación?",
+      "expected": [{"law": "CPEUM", "article": "123"}]
+    },
+    {
+      "id": "cpeum-huelga",
+      "type": "cpeum",
+      "question": "¿Los trabajadores tenemos derecho a irnos a huelga? ¿Eso lo dice la Constitución o solo la ley del trabajo?",
+      "expected": [{"law": "CPEUM", "article": "123"}]
+    },
+    {
+      "id": "cpeum-horas-extra",
+      "type": "cpeum",
+      "question": "Mi jefe me hace quedarme horas extra cada semana, ¿hasta cuántas me pueden obligar a trabajar y cómo me las deben pagar según la Constitución?",
+      "expected": [{"law": "CPEUM", "article": "123"}]
+    },
+    {
+      "id": "sin-respesuta-salario-minimo-monto",
+      "type": "no_answer",
+      "question": "¿Cuánto es el salario mínimo diario que está vigente este año en mi zona?",
+      "expected": []
+    },
+    {
+      "id": "sin-respesuta-sat-constancia",
+      "type": "no_answer",
+      "question": "Mi empresa me pide mi constancia de situación fiscal, ¿cómo la saco en el portal del SAT y cuánto tarda?",
+      "expected": []
+    },
+    {
+      "id": "sin-respesuta-imss-semanas",
+      "type": "no_answer",
+      "question": "¿Cuántas semanas cotizadas necesito en el IMSS para pensionarme y de cuánto me va a quedar la pensión?",
+      "expected": []
+    }
+]
