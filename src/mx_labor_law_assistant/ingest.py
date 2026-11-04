@@ -112,7 +112,7 @@ def chunk(record: dict, max_words: int = 400) -> list[dict]:
     
     return [schema(i, text) for i, text in enumerate(chunks)] 
 
-def load_record() -> list[dict]:
+def load_records() -> list[dict]:
     """Etapa 9: registos de as dos leyes, ya partidos."""
     lft = load_law(
         path=ROOT / "data" / "laws" / "lft.pdf",
@@ -136,7 +136,7 @@ def load_record() -> list[dict]:
 if __name__ == "__main__":
     from rich import print
 
-    records = load_record()
+    records = load_records()
 
     print(len(records))
     print(max(len(r["text"].split()) for r in records))   
