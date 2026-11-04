@@ -1,3 +1,5 @@
+from .config import ROOT
+
 import re
 from pathlib import Path
 
@@ -109,33 +111,32 @@ def chunk(record: dict, max_words: int = 400) -> list[dict]:
         }
     
     return [schema(i, text) for i, text in enumerate(chunks)] 
-        
 
-if __name__ == "__main__":
-    from rich import print
-    from .config import ROOT
-
-    PDF_LFT = ROOT / "data" / "laws" / "lft.pdf"
-    PDF_CPEUM = ROOT / "data"/ "laws" / "cpeum.pdf"
-     
+def load_record() -> list[dict]:
+    """Etapa 9: registos de as dos leyes, ya partidos."""
     lft = load_law(
-        path=PDF_LFT,
+        path=ROOT / "data" / "laws" / "lft.pdf",
         law="LFT",
         start="Artículo 1o.",
         end="TRANSITORIOS"
     )
 
     cpeum = load_law(
-        path=PDF_CPEUM,
+        path=ROOT / "data"/ "laws" / "cpeum.pdf",
         law="CPEUM",
         start="Artículo 123.",
         end="Artículo 124."
     )
     
-
     records = []
     for r in lft + cpeum:
         records.extend(chunk(r))
+    return records
+
+if __name__ == "__main__":
+    from rich import print
+
+    records = load_record()
 
     print(len(records))
     print(max(len(r["text"].split()) for r in records))   
