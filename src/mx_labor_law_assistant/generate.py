@@ -1,14 +1,6 @@
-import os
+from .config import client, MODEL
 
-from dotenv import load_dotenv
-from openai import OpenAI
-
-load_dotenv()
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-)
-
-INSTRUCCIONTONS = (
+INSTRUCTIONS = (
     "Eres un asistente de derecho laboral mexicano. "
     "Response solo con los artículos que se te dan. "
     "Cita el artículo y la ley donde sale cada dato. "
@@ -18,8 +10,8 @@ INSTRUCCIONTONS = (
 
 def ask(question: str, context: str) -> str:
     response = client.responses.create(
-        model=os.getenv("OPENAI_MODEL"),
-        instructions=INSTRUCCIONTONS,
+        model=MODEL,
+        instructions=INSTRUCTIONS,
         input=f"Artículos:\n{context}\n\nPregunta: {question}",
     )
     return response.output_text
