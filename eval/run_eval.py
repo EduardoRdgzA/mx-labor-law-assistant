@@ -33,14 +33,18 @@ def score(questions, all_found):
         if question["expected"] == []:
             continue
 
-        status = False
+        rank = None
         for expected in question["expected"]:
-            if  (expected["law"], expected["article"]) in found:
-                status = True
+            key = (expected["law"], expected["article"])
+            if key in found:
+                position = found.index(key) + 1
+                if rank is None or position < rank:
+                    rank = position                
 
         rows.append({
             "id": question["id"],
-            "status": status
+            "status": rank is not None and rank <= 5,
+            "rank": rank
         })
 
     return rows
@@ -51,9 +55,9 @@ if __name__ == "__main__":
 
     questions = load_questions()
     records, vectors = load_all(open_db(DB_PATH))
-    rows = score(questions, retrieve(questions, records, vectors))
+    rows = score(questions, retrieve(questions, records, vectors, k=10))
 
     for row in rows:
-        print(row["id"], row["status"])
+        print(row["id"], row["status"], row["rank"])
 
     print(sum(row["status"] for row in rows), "de", len(rows) )
