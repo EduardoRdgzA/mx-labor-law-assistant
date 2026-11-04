@@ -1,15 +1,25 @@
 import numpy as np
 
-from .config import client, EMBEDDING
+from .config import client, langfuse, observe, EMBEDDING
 
+@observe(name="EMB", as_type="embedding")
 def embed(texts: list[str]) -> np.ndarray:
     """Etapa 1: Convierte textos en vectores, en el mismo orden"""
     response = client.embeddings.create(
         model=EMBEDDING,
         input=texts,
     )
+
+    langfuse.update_current_generation(
+        model=EMBEDDING,
+        usage_details={
+            "input": response.usage.prompt_tokens,
+        }
+    )
+
     return np.array([item.embedding for item in response.data], dtype=np.float32)
 
+@observe(name="search", as_type="retriever", capture_input=False)
 def search(
     questions: str, 
     records: list[dict],
@@ -17,6 +27,8 @@ def search(
     k: int = 5
 ) -> list[dict]:
     """Etapa 2: Devuelve los k vecinos más parecidos a la pregunta."""
+    langfuse.update_current_span(input=questions)
+    
     query = embed([questions])[0]
     scores = vectors @ query
     best = np.argsort(scores)[::-1][:k]

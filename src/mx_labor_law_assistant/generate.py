@@ -1,4 +1,4 @@
-from .config import client, MODEL
+from .config import client, langfuse, observe, MODEL
 
 INSTRUCTIONS = (
     "Eres un asistente de derecho laboral mexicano. "
@@ -11,13 +11,22 @@ INSTRUCTIONS = (
     "Si la respuesta no está en los artículos, dilo y no la inventes."
 )
 
-
+@observe(name="LLM", as_type="generation")
 def ask(question: str, context: str) -> str:
     response = client.responses.create(
         model=MODEL,
         instructions=INSTRUCTIONS,
         input=f"Artículos:\n{context}\n\nPregunta: {question}",
     )
+
+    langfuse.update_current_generation(
+        model=MODEL,
+        usage_details={
+            "input": response.usage.input_tokens,
+            "output": response.usage.output_tokens,
+        },
+    )
+
     return response.output_text
 
 if __name__ == "__main__":

@@ -1,9 +1,10 @@
-from .config import DB_PATH
+from .config import DB_PATH, langfuse, observe
 from .generate import ask
 from .retrieve import search
 from .store import load_all, open_db
 from .validate import validate
 
+@observe(name="question")
 def answer(question: str) -> str:
     """Etapa 1: Busca los artículos y le pide respuesta al modelo."""
     records, vectors = load_all(open_db(DB_PATH))
@@ -27,6 +28,8 @@ def answer(question: str) -> str:
 if __name__ == "__main__":
     from rich.console import Console
     from rich.markdown import Markdown
+    from langfuse import propagate_attributes
+
     console  = Console()
     
     def assistant(question: dict) -> None:
@@ -54,5 +57,7 @@ if __name__ == "__main__":
         "justificada en Junio. ¿Qué opciones tengo y a qué indemnización tengo derecho? Además, "
         "¿me corresponde aguinaldo y prima vacacional de este año, aunque no lo haya trabajado completo?"
         )
-    
-    assistant(QN1)
+    with propagate_attributes(session_id="prueba-5", tags=["notebook"]):
+        assistant(QN1)
+
+    langfuse.flush()
