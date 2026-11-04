@@ -1,8 +1,10 @@
 import json
+from pathlib import Path
 
 from src.mx_labor_law_assistant.config import DB_PATH, ROOT
 from src.mx_labor_law_assistant.store import load_all, open_db
 from src.mx_labor_law_assistant.retrieve import search
+from src.mx_labor_law_assistant.assistant import answer
 
 def load_questions() -> list[dict]:
     """Etapa 1: Lee las preguntas de prueba."""
@@ -50,14 +52,58 @@ def score(questions, all_found):
     return rows
 
 
+def save_report(rows: list[dict], no_answer: list[dict]) -> Path:
+    """Etapa 4: Guarda el resultado de la evaluación en eval/results/."""
+    path = ROOT / "eval" / "results" / "retrieval.json"
+    path.parent.mkdir(exist_ok=True)
+
+    report = {
+        "hits": sum([row["status"] for row in rows]),
+        "total": len(rows),
+        "rows": rows,
+        "no_answer": no_answer,
+    }
+    path.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return path
+
+def check_no_answer(questions: list[dict]) -> list[dict]:
+    """Etapa 5: Hace preguntas sin respesuta a asistente y guarda la respuesta"""
+    rows = []
+
+    for question in questions:
+        if question["expected"] != []:
+            continue
+
+        result = answer(question["question"])
+        rows.append({
+            "id": question["id"],
+            "answer": result["answer"],
+            "cited": result["validation"]["cited"]
+        })
+
+    return rows
+
+
 if __name__ == "__main__":
     from rich import print
 
     questions = load_questions()
     records, vectors = load_all(open_db(DB_PATH))
     rows = score(questions, retrieve(questions, records, vectors, k=10))
+    no_answer = check_no_answer(questions)
+    path = save_report(rows, no_answer)
 
     for row in rows:
         print(row["id"], row["status"], row["rank"])
 
-    print(sum(row["status"] for row in rows), "de", len(rows) )
+    print(sum(row["status"] for row in rows), "de", len(rows))
+
+    print("\nPreguntas sin respuesta")
+    for row in no_answer:
+        print("\n", row["id"], "| citó:", row["cited"])
+        print(row["answer"])
+
+    print("\nReporte:", path)

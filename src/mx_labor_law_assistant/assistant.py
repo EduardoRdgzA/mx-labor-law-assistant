@@ -57,7 +57,7 @@ if __name__ == "__main__":
         "justificada en Junio. ¿Qué opciones tengo y a qué indemnización tengo derecho? Además, "
         "¿me corresponde aguinaldo y prima vacacional de este año, aunque no lo haya trabajado completo?"
         )
-    with propagate_attributes(session_id="prueba-7", tags=["notebook"]):
+    with propagate_attributes(session_id="prueba-8", tags=["notebook"]):
         assistant(QN1)
 
     langfuse.flush()
