@@ -2,7 +2,7 @@ import numpy as np
 
 from .config import client, langfuse, observe, EMBEDDING
 
-@observe(name="EMB", as_type="embedding")
+@observe(name="EMB", as_type="embedding", capture_output=False)
 def embed(texts: list[str]) -> np.ndarray:
     """Etapa 1: Convierte textos en vectores, en el mismo orden"""
     response = client.embeddings.create(

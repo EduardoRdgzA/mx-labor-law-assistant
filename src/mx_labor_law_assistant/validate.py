@@ -1,4 +1,7 @@
 import re
+from .config import observe
+
+@observe(name="validation", as_type="guardrail")
 def validate(answer: str, found: list[dict]) -> dict:
     """Etapa 1: Revisa que cada artículo citado esté entre los que dieron."""
     given = {(r["law"], r["article"]) for r in found}
