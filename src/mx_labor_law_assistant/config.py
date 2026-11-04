@@ -14,3 +14,4 @@ client = OpenAI(
 
 MODEL = os.getenv("OPENAI_MODEL")
 EMBEDDING = os.getenv("OPENAI_EMBEDDING_MODEL")
+DB_PATH = ROOT / "data" / "laws.sqlite"
