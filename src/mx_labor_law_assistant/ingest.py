@@ -113,10 +113,10 @@ def chunk(record: dict, max_words: int = 400) -> list[dict]:
 
 if __name__ == "__main__":
     from rich import print
+    from .config import ROOT
 
-    root = Path(__file__).resolve().parents[2]
-    PDF_LFT = root / "data" / "laws" / "lft.pdf"
-    PDF_CPEUM = root / "data"/ "laws" / "cpeum.pdf"
+    PDF_LFT = ROOT / "data" / "laws" / "lft.pdf"
+    PDF_CPEUM = ROOT / "data"/ "laws" / "cpeum.pdf"
      
     lft = load_law(
         path=PDF_LFT,
