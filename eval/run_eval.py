@@ -3,8 +3,11 @@ from pathlib import Path
 
 from src.mx_labor_law_assistant.config import DB_PATH, ROOT
 from src.mx_labor_law_assistant.store import load_all, open_db
-from src.mx_labor_law_assistant.retrieve import search
+from src.mx_labor_law_assistant.retrieve import search, embed
 from src.mx_labor_law_assistant.assistant import answer
+
+import numpy as np
+from src.mx_labor_law_assistant.user_docs import load_document
 
 def load_questions() -> list[dict]:
     """Etapa 1: Lee las preguntas de prueba."""
@@ -92,6 +95,11 @@ if __name__ == "__main__":
 
     questions = load_questions()
     records, vectors = load_all(open_db(DB_PATH))
+
+    example = load_document(ROOT / "data" / "examples" / "lineamientos_ccl_cdmx.pdf")
+    records = records + example
+    vectors = np.vstack([vectors, embed([r["text"] for r in example])])
+
     rows = score(questions, retrieve(questions, records, vectors, k=10))
     no_answer = check_no_answer(questions)
     path = save_report(rows, no_answer)

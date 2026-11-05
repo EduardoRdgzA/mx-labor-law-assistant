@@ -1,11 +1,11 @@
 {
-  "hits": 8,
-  "total": 9,
+  "hits": 9,
+  "total": 11,
   "rows": [
     {
       "id": "lft-despido-indemnizacion",
       "status": true,
-      "rank": 1
+      "rank": 2
     },
     {
       "id": "lft-vacaciones",
@@ -46,54 +46,41 @@
       "id": "cpeum-horas-extra",
       "status": false,
       "rank": 7
+    },
+    {
+      "id": "own-doc-duracion-conciliacion",
+      "status": false,
+      "rank": 6
+    },
+    {
+      "id": "own-doc-fecha-audiencia",
+      "status": true,
+      "rank": 2
     }
   ],
   "no_answer": [
     {
       "id": "sin-respesuta-salario-minimo-monto",
-      "answer": "Con los artículos proporcionados no se puede determinar el monto diario vigente en tu zona: no incluyen una cantidad ni identifican las zonas geográficas o el año de vigencia.\n\nEl artículo 90 define el salario mínimo y señala que su fijación anual o revisión no puede quedar por debajo de la inflación observada durante el periodo correspondiente, pero no establece el monto. Para las personas trabajadoras del hogar y del campo, los artículos 335 y 280 Bis prevén que la Comisión Nacional de los Salarios Mínimos fije salarios mínimos profesionales; tampoco indican su cuantía.\n\nEl límite de diez veces el salario mínimo general del artículo 144 se refiere al salario máximo para calcular aportaciones, no al monto del salario mínimo diario. (LFT, arts. 90, 144, 280 Bis y 335)",
-      "cited": [
-        [
-          "LFT",
-          "144"
-        ],
-        [
-          "LFT",
-          "280 Bis"
-        ],
-        [
-          "LFT",
-          "335"
-        ],
-        [
-          "LFT",
-          "90"
-        ]
-      ]
+      "answer": "Los fragmentos no indican el monto diario vigente este año ni cuál corresponde a tu zona. Señalan que el salario mínimo es la cantidad menor que se recibe en efectivo por una jornada, pero no incluyen cifras actuales por zona. (LFT, art. 90)",
+      "cited": {
+        "Fragmento 1": "LFT, art. 90"
+      }
     },
     {
       "id": "sin-respesuta-sat-constancia",
-      "answer": "Los artículos proporcionados no indican cómo obtener una constancia de situación fiscal en el portal del SAT ni cuánto tarda el trámite. El artículo 897-F únicamente menciona al SAT como una autoridad a la que el Tribunal puede solicitar información sobre trabajadores; no regula la expedición de esa constancia (LFT, art. 897-F).",
-      "cited": [
-        [
-          "LFT",
-          "897-F"
-        ]
-      ]
+      "answer": "Los fragmentos no indican cómo obtener la constancia de situación fiscal en el portal del SAT ni cuánto tarda. Solo mencionan que ciertos trámites del Centro de Conciliación solicitan el RFC; no explican cómo obtener esa constancia. (lineamientos_ccl_cdmx.pdf, p. 7)(lineamientos_ccl_cdmx.pdf, p. 14)",
+      "cited": {
+        "Fragmento 1": "lineamientos_ccl_cdmx.pdf, p. 7",
+        "Fragmento 5": "lineamientos_ccl_cdmx.pdf, p. 14"
+      }
     },
     {
       "id": "sin-respesuta-imss-semanas",
-      "answer": "Los artículos proporcionados **no indican cuántas semanas cotizadas necesitas para pensionarte ni cómo calcular el monto de tu pensión**.\n\nEl artículo 899-D establece que, si hay controversia, corresponde al organismo de seguridad social probar, entre otros datos, las semanas cotizadas, los promedios salariales de cotización y el otorgamiento de pensiones; no fija los requisitos ni la fórmula para determinar la pensión (LFT, art. 899-D).\n\nEl artículo 277 contempla un fondo de pensiones de jubilación o invalidez no derivada de riesgo de trabajo que puede pactarse en un contrato colectivo. Sus requisitos se determinan en los estatutos sindicales o en un reglamento especial aprobado por la asamblea, y las pensiones las cubre la institución correspondiente previa aprobación del Tribunal (LFT, art. 277).",
-      "cited": [
-        [
-          "LFT",
-          "277"
-        ],
-        [
-          "LFT",
-          "899-D"
-        ]
-      ]
+      "answer": "Los fragmentos no indican cuántas semanas cotizadas necesitas para pensionarte ni cómo calcular el monto de tu pensión.\n\nSí señalan que, si hay controversia sobre las semanas cotizadas, los promedios salariales o el otorgamiento de la pensión, corresponde al organismo de seguridad social probar esos datos. (LFT, art. 899-D)\n\nAdemás, un contrato colectivo puede establecer un fondo de pensiones y sus requisitos, pero estos se determinan en los estatutos sindicales o en un reglamento aprobado por la asamblea. (LFT, art. 277)",
+      "cited": {
+        "Fragmento 1": "LFT, art. 277",
+        "Fragmento 2": "LFT, art. 899-D"
+      }
     }
   ]
 }
