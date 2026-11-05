@@ -64,7 +64,7 @@ if __name__ == "__main__":
     if args.docs:
         result = add_documents([Path(path) for path in args.docs])
         console.print("[green]Procesados:", result["done"])
-        console.print("[red]Fallaron:", result["failed"] if [] else "Ninguno" )
+        console.print("[red]Fallaron:", result["failed"] or "Ninguno" )
 
 
     def assistant(question: dict) -> None:
