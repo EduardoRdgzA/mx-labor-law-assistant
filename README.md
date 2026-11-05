@@ -43,6 +43,30 @@ En Langfuse, cada pregunta es una traza `question` con tres pasos: `search`, `LL
 correcto para 14 preguntas de prueba. Resultado: **9 de 11** aciertos en el top 5. Las otras 3
 son preguntas sin respuesta, y el asistente avisó correctamente en las 3.
 
+## Estructura
+
+```
+src/mx_labor_law_assistant/
+  config.py      rutas, modelos y clientes de OpenAI y Langfuse
+  ingest.py      PDF de ley → artículos → pedazos
+  store.py       SQLite: guardar y leer pedazos con su embedding
+  index.py       crea data/laws.sqlite (se corre una vez)
+  retrieve.py    embeddings y búsqueda (top 5 por producto punto)
+  generate.py    llamada al modelo con las instrucciones
+  validate.py    revisa las citas de la respuesta
+  user_docs.py   PDFs del usuario: leer por página y guardar
+  assistant.py   une todo: answer(pregunta) y el comando de terminal
+eval/
+  questions.json preguntas de prueba con su artículo esperado
+  run_eval.py    evaluación de la recuperación
+  results/       reporte de la última corrida
+data/
+  laws/          PDFs oficiales y SOURCES.md con fechas
+  examples/      documento propio de ejemplo y su fuente
+  laws.sqlite    base ya cargada
+notebook/demo.ipynb
+```
+
 ## Cómo correrlo
 
 ### Variables de entorno
@@ -122,30 +146,6 @@ docker run --rm --env-file .env mx-labor-law-assistant python -m eval.run_eval
 
 El reporte queda en `eval/results/retrieval.json`.
 
-## Estructura
-
-```
-src/mx_labor_law_assistant/
-  config.py      rutas, modelos y clientes de OpenAI y Langfuse
-  ingest.py      PDF de ley → artículos → pedazos
-  store.py       SQLite: guardar y leer pedazos con su embedding
-  index.py       crea data/laws.sqlite (se corre una vez)
-  retrieve.py    embeddings y búsqueda (top 5 por producto punto)
-  generate.py    llamada al modelo con las instrucciones
-  validate.py    revisa las citas de la respuesta
-  user_docs.py   PDFs del usuario: leer por página y guardar
-  assistant.py   une todo: answer(pregunta) y el comando de terminal
-eval/
-  questions.json preguntas de prueba con su artículo esperado
-  run_eval.py    evaluación de la recuperación
-  results/       reporte de la última corrida
-data/
-  laws/          PDFs oficiales y SOURCES.md con fechas
-  examples/      documento propio de ejemplo y su fuente
-  laws.sqlite    base ya cargada
-notebook/demo.ipynb
-```
-
 ## Fuentes y versiones
 
 - **LFT**: última reforma DOF 14-05-2026.
@@ -195,8 +195,6 @@ son fáciles.
 - **Preguntas sin respuesta**: en las 3 el asistente dijo que los documentos no traen el dato
 (monto del salario mínimo, trámite del SAT, semanas del IMSS) y no inventó cifras.
 
-> TODO(Eduardo): captura del reporte o de la tabla de Langfuse.
-
 ## Cómo se resolvió cada reto
 
 ### 1. Lenguaje coloquial
@@ -212,10 +210,8 @@ puede quedar fuera del top 5.
 Dos capas:
 
 1. **Instrucciones**: el modelo responde solo con los fragmentos dados y, si la respuesta no
-
    está, lo dice, no la inventa y no pone citas.
 2. **Validación**: cada cita debe ser de un fragmento entregado; una cita inventada sale en
-
    `unknown` y la respuesta queda como `valid: False`.
 
 En las 3 preguntas sin respuesta de la evaluación, el asistente avisó que el dato no estaba. A
@@ -234,12 +230,15 @@ lleva su cita. Ejemplo real: a «¿cuánto puede durar la conciliación?», el a
 que los lineamientos fijan 45 días naturales `(lineamientos_ccl_cdmx.pdf, p. 4)` y que la LFT
 fija 15 días para la audiencia, no para todo el procedimiento `(LFT, art. 684-E)`.
 
-**Cómo se cita.** Al principio el modelo escribía las citas a mano y las cambiaba: inventó un
-nombre para el documento («Lineamientos CCL CDMX») y mezcló la página con un artículo interno
-(«p. 4, art. 9»). Mejorar el texto del prompt no bastó. Ahora cada fragmento llega con un id
-corto (`[F1]`…`[F5]`), el modelo solo escribe el id y el código pone la cita legible. Es la
-misma idea de los trabajos de atribución que citan con índices numéricos (ALCE, Gao et al.,
-2023).
+**Cómo se cita.**
+
+- Al principio el modelo escribía las citas a mano y las cambiaba: inventó un nombre para el
+  documento («Lineamientos CCL CDMX») y mezcló la página con un artículo interno («p. 4, art. 9»).
+- Mejorar el texto del prompt no bastó.
+- Ahora cada fragmento llega con un id corto (`[F1]`…`[F5]`): el modelo solo escribe el id y
+  el código pone la cita legible.
+- Es la misma idea de los trabajos de atribución que citan con índices numéricos (ALCE, Gao et
+  al., 2023).
 
 ### 4. Diagnóstico
 
@@ -254,13 +253,14 @@ Para saber qué falló: si los fragmentos correctos no están en `search`, fall�
 están pero la respuesta es mala, falló el modelo; si una cita mala pasó, falló la validación.
 
 **Caso real: pregunta compuesta.** «Me despidieron sin causa, ¿qué indemnización me toca? ¿Y el
-aguinaldo y la prima vacacional?». La respuesta dijo que no tenía la información de aguinaldo ni
-prima. En la traza, el paso `LLM` mostró que el modelo fue honesto con lo que recibió, y el paso
-`search` mostró la causa: trajo los arts. 436, 79, 50, 251 y 157, y no el 48 (puesto 6), el 87
-(puesto 46) ni el 80 (puesto 140). Fue un fallo de **búsqueda**, no del modelo: un solo vector
-para cuatro temas. La mejora sería partir la pregunta en sub-preguntas y buscar cada una.
+aguinaldo y la prima vacacional?».
 
-> TODO(Eduardo): captura y enlace a la traza en Langfuse.
+- La respuesta dijo que no tenía la información de aguinaldo ni prima.
+- Paso `LLM`: el modelo fue honesto con lo que recibió.
+- Paso `search`: trajo los arts. 436, 79, 50, 251 y 157, y no el 48 (puesto 6), el 87
+  (puesto 46) ni el 80 (puesto 140).
+- Fue un fallo de **búsqueda**, no del modelo: un solo vector para cuatro temas.
+- Mejora: partir la pregunta en sub-preguntas y buscar cada una.
 
 **Otro caso: el validador explicó un fallo.** Una respuesta sobre la conciliación no mencionó
 los lineamientos. En `validation`, `not_cited` y `cited` solo tenían fragmentos de la LFT: el
@@ -322,10 +322,22 @@ romper.
 
 ## Uso de asistentes de IA
 
-> TODO(Eduardo): revisar y ajustar con tus palabras.
-
-Usé Claude Code como guía durante el proyecto: para discutir decisiones, revisar mi código. El código lo escribí y lo corrí yo, paso por paso. También lo usé para tareas puntuales: redactar las preguntas de prueba sin ver mis datos, buscar el documento de ejemplo y revisar técnicas para que el modelo cite bien. Revisé y entiendo todo lo que se entrega.
+Usé Claude Code como guía en las dos partes: para discutir decisiones, revisar mi código y
+proponer la redacción de este README y de las celdas de texto del notebook, que revisé y
+ajusté. El código lo escribí y lo corrí yo, paso por paso. También lo usé para tareas
+puntuales: redactar las preguntas de prueba sin ver mis datos, buscar el documento de ejemplo y
+revisar técnicas para que el modelo cite bien. Revisé y entiendo todo lo que se entrega.
 
 ## Parte 2: clasificación
 
-> TODO(Eduardo): notebook en `classification/breast_cancer.ipynb`.
+El notebook está en [`classification/breast_cancer.ipynb`](classification/breast_cancer.ipynb),
+con las explicaciones en celdas de texto.
+
+- **Datos:** 569 tumores (212 malignos, 357 benignos) con 30 medidas, de `load_breast_cancer`.
+- **Criterio:** dejar pasar un maligno es el error más grave, así que la métrica principal es el
+  recall de la clase maligna; el AUC es la segunda.
+- **Partición:** 60 % entrenamiento, 20 % validación, 20 % prueba, estratificada.
+- **Modelos:** regresión logística, KNN y bosque aleatorio, comparados en validación.
+- **Elegido:** regresión logística, sin falsos negativos en validación y sin overfitting (el
+  bosque sí lo mostró: 1.000 en train contra 0.965 en validación).
+- **Prueba:** accuracy 0.991, AUC 0.997; detectó 42 de 43 malignos.
