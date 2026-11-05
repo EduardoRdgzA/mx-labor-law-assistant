@@ -39,6 +39,8 @@ Cada función vive en su módulo: `search()` en `retrieve.py`, `ask()` en `gener
 En Langfuse, cada pregunta es una traza `question` con tres pasos: `search`, `LLM` y
 `validation`.
 
+![Lista de trazas en Langfuse: question, search, EMB, LLM y validation por cada pregunta](docs/img/traicing_list.png)
+
 **Evaluación:** un proceso aparte (`eval/run_eval.py`) mide si la búsqueda trae el artículo
 correcto para 14 preguntas de prueba. Resultado: **9 de 11** aciertos en el top 5. Las otras 3
 son preguntas sin respuesta, y el asistente avisó correctamente en las 3.
@@ -132,6 +134,8 @@ poetry run python -m src.mx_labor_law_assistant.assistant --docs ruta/al/archivo
 `--question` es obligatorio. `--docs` es opcional y acepta uno o varios PDFs; lo que se carga
 queda guardado en `data/user.sqlite` para las siguientes preguntas.
 
+![Respuesta en la terminal a la pregunta compuesta, con sus citas](docs/img/question_e49b4c8e.png)
+
 ### Evaluación (un solo comando)
 
 ```
@@ -214,6 +218,8 @@ Dos capas:
 2. **Validación**: cada cita debe ser de un fragmento entregado; una cita inventada sale en
    `unknown` y la respuesta queda como `valid: False`.
 
+![Salida de la validación: fragmentos citados, no citados, desconocidos y veredicto](docs/img/validacion_terminal.png)
+
 En las 3 preguntas sin respuesta de la evaluación, el asistente avisó que el dato no estaba. A
 veces cita artículos relacionados (por ejemplo el que define el salario mínimo) para explicar lo
 que sí dicen; por eso el veredicto de «avisó que no está» se revisa leyendo la respuesta, no
@@ -249,17 +255,26 @@ tokens y costo:
 - `LLM`: qué recibió el modelo y qué contestó.
 - `validation`: qué fragmentos se citaron, cuáles no y si alguna cita es inventada.
 
+![Una pregunta en Langfuse: la traza question y sus pasos search, EMB, LLM y validation](docs/img/traza_lista_sesion.png)
+
 Para saber qué falló: si los fragmentos correctos no están en `search`, falló la búsqueda; si
 están pero la respuesta es mala, falló el modelo; si una cita mala pasó, falló la validación.
 
 **Caso real: pregunta compuesta.** «Me despidieron sin causa, ¿qué indemnización me toca? ¿Y el
 aguinaldo y la prima vacacional?».
 
-- La respuesta dijo que no tenía la información de aguinaldo ni prima.
+![Traza en Langfuse de la pregunta compuesta: search, LLM y validation con tiempo, tokens y costo](docs/img/traza_pregunta_compuesta.png)
+
+[Ver la traza en Langfuse](URL_DE_LA_TRAZA) (requiere acceso al proyecto).
+
+- La respuesta explicó la indemnización `(LFT, art. 48)` y dijo que los fragmentos no indican
+  nada sobre aguinaldo ni prima vacacional.
 - Paso `LLM`: el modelo fue honesto con lo que recibió.
-- Paso `search`: trajo los arts. 436, 79, 50, 251 y 157, y no el 48 (puesto 6), el 87
-  (puesto 46) ni el 80 (puesto 140).
-- Fue un fallo de **búsqueda**, no del modelo: un solo vector para cuatro temas.
+- Paso `search`: trajo los arts. 436, 79, 50, 502 y 48. No trajo el 87 (aguinaldo) ni el 80
+  (prima vacacional).
+- Paso `validation`: citó 48, 50 y 79; dejó sin citar 436 y 502; ninguna cita inventada.
+- Fue un fallo de **búsqueda**, no del modelo: un solo vector para cuatro temas. En una corrida
+  anterior ni el 48 entró (puesto 6, a 0.001 del quinto): el corte del top 5 es frágil.
 - Mejora: partir la pregunta en sub-preguntas y buscar cada una.
 
 **Otro caso: el validador explicó un fallo.** Una respuesta sobre la conciliación no mencionó
@@ -341,3 +356,8 @@ con las explicaciones en celdas de texto.
 - **Elegido:** regresión logística, sin falsos negativos en validación y sin overfitting (el
   bosque sí lo mostró: 1.000 en train contra 0.965 en validación).
 - **Prueba:** accuracy 0.991, AUC 0.997; detectó 42 de 43 malignos.
+
+## Licencia
+
+MIT. Ver [`LICENSE`](LICENSE). Los PDFs de las leyes en `data/laws/` y el documento de
+ejemplo en `data/examples/` son textos oficiales públicos; sus fuentes están en cada `SOURCES.md`.
