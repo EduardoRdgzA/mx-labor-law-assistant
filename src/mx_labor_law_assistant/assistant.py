@@ -33,8 +33,8 @@ def answer(question: str) -> dict:
 
     text = ask(question, context)
 
-    check = validate(text, list(labels))
-    sources = [r for fid, r in zip(labels, found) if fid in check["cited"]]
+    check = validate(text, labels)
+    sources = [r for i, r in enumerate(found, start=1) if f"Fragmento {i}" in check["cited"]]
 
     for fid, label in labels.items():
         text = text.replace(f"[{fid}]", f"({label})")
@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
     if args.docs:
         result = add_documents([Path(path) for path in args.docs])
-        console.print("[green]Procesados", result["done"])
-        console.print("[red]Fallaron", result["failed"])
+        console.print("[green]Procesados:", result["done"])
+        console.print("[red]Fallaron:", result["failed"] if [] else "Ninguno" )
 
 
     def assistant(question: dict) -> None:

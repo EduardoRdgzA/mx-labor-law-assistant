@@ -2,14 +2,15 @@ import re
 from .config import observe
 
 @observe(name="validation", as_type="guardrail")
-def validate(answer: str, ids: list[str]) -> dict:
-    """Etapa 1: Revisa que cada id citado [F#] esté entre los fragmentos dados."""
-    cited = set(re.findall(r"\[(F\d+)\]", answer))
-    unknown = sorted(cited - set(ids))
+def validate(answer: str, labels: dict) -> dict:
+    """Etapa 1: Revisa que cada fragmento citado [F#] esté entre los que se dieron."""
+    cited = sorted(set(re.findall(r"\[(F\d+)\]", answer)))
+    unknown = [fid for fid in cited if fid not in labels]
 
     return {
-        "cited": sorted(cited),
-        "unknown": unknown,
+        "cited": {f"Fragmento {fid[1:]}": labels[fid] for fid in cited if fid in labels},
+        "not_cited": {f"Fragmento {fid[1:]}": label for fid, label in labels.items() if fid not in cited},
+        "unknown": [f"Fragmento {fid[1:]}" for fid in unknown],
         "valid": not unknown,
     }
 
@@ -17,11 +18,7 @@ def validate(answer: str, ids: list[str]) -> dict:
 if __name__ == "__main__":
     from rich import print
 
-    found = [
-        {"law": "LFT", "article": "76"},
-        {"law": "LFT", "article": "77"},
-        {"law": "LFT", "article": "81"},
-    ]
-    print(validate("Son 12 días (LFT, arts. 76 y 81).", found))
-    print(validate("Son 12 días (LFT, art. 76) y también (LFT, art. 90).", found))    
+    labels = {"F1": "LFT, art. 76", "F2": "LFT, art. 81", "F3": "contrato.pdf, p. 2"}
+    print(validate("Son 12 días de vacaciones. [F1][F3]", labels))
+    print(validate("Son 12 días [F1] y también [F7].", labels))   
 
