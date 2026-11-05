@@ -9,6 +9,7 @@ load_dotenv()
 
 ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "data" / "laws.sqlite"
+USER_DB_PATH = ROOT / "data" / "user.sqlite"
 
 MODEL = os.getenv("OPENAI_MODEL")
 EMBEDDING = os.getenv("OPENAI_EMBEDDING_MODEL")
