@@ -9,8 +9,8 @@ from .validate import validate
 from .user_docs import add_documents
 
 @observe(name="question")
-def answer(question: str) -> str:
-    """Etapa 1: Busca los artículos y le pide respuesta al modelo."""
+def answer(question: str) -> dict:
+    """Etapa 1: Busca los fragmentos y le pide respuesta al modelo."""
     records, vectors = load_all(open_db(DB_PATH))
     user_records, user_vectors = load_all(open_db(USER_DB_PATH))
 
@@ -19,20 +19,30 @@ def answer(question: str) -> str:
         vectors = np.vstack([vectors, user_vectors])
 
     found = search(question, records, vectors)
+
+    labels = {}
+    for i, r in enumerate(found, start=1):
+        if r["article"].startswith("p. "):
+            labels[f"F{i}"] = f"{r['law']}, {r['article']}"
+        else:
+            labels[f"F{i}"] = f"{r['law']}, art. {r['article']}"
+
     context = "\n\n".join(
-        f"{r['law']}, artículo {r['article']}:\n{r['text']}" for r in found
+        f"[{fid}] {labels[fid]}:\n{r['text']}" for fid, r in zip(labels, found)
     )
 
     text = ask(question, context)
 
-    check = validate(text, found)
-    cited = set(check["cited"])
-    sources =  [r for r in found if (r["law"], r["article"]) in cited]
+    check = validate(text, list(labels))
+    sources = [r for fid, r in zip(labels, found) if fid in check["cited"]]
+
+    for fid, label in labels.items():
+        text = text.replace(f"[{fid}]", f"({label})")
 
     return {
         "answer": text,
         "sources": sources,
-        "validation": check
+        "validation": check,
     }
 
 if __name__ == "__main__":

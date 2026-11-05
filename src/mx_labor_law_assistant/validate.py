@@ -2,26 +2,17 @@ import re
 from .config import observe
 
 @observe(name="validation", as_type="guardrail")
-def validate(answer: str, found: list[dict]) -> dict:
-    """Etapa 1: Revisa que cada artículo citado esté entre los que dieron."""
-    given = {(r["law"], r["article"].removeprefix("p. ")): r["article"] for r in found}
-    laws = "|".join(re.escape(law) for law in {r["law"] for r in found})
+def validate(answer: str, ids: list[str]) -> dict:
+    """Etapa 1: Revisa que cada id citado [F#] esté entre los fragmentos dados."""
+    cited = set(re.findall(r"\[(F\d+)\]", answer))
+    unknown = sorted(cited - set(ids))
 
-    cited  = set()
-
-    law_rx = re.compile(rf"\(({laws})\b([^)]*)\)")
-    article_rx = re.compile(r"\d+(?:-[A-ZÑ])?(?: (?:Bis|Ter|Quáter))?")
-
-    for law, rest in law_rx.findall(answer):
-        for article in article_rx.findall(rest):
-            cited.add((law, article))
-
-    unknown = sorted(cited - given.keys())
     return {
-        "cited": sorted((law, given.get((law, article), article)) for law, article in cited),
+        "cited": sorted(cited),
         "unknown": unknown,
         "valid": not unknown,
     }
+
 
 if __name__ == "__main__":
     from rich import print
