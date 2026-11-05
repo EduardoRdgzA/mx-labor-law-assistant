@@ -6,6 +6,7 @@ authors = [
     {name = "Eduardo_Rdgz",email = "phys.eduardo.ra@gmail.com"}
 ]
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.12, <3.13"
 dependencies = [
     "openai (>=3.42.1,<4.0.0)",
