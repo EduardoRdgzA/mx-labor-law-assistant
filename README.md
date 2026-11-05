@@ -265,7 +265,8 @@ aguinaldo y la prima vacacional?».
 
 ![Traza en Langfuse de la pregunta compuesta: search, LLM y validation con tiempo, tokens y costo](docs/img/traza_pregunta_compuesta.png)
 
-[Ver la traza en Langfuse](URL_DE_LA_TRAZA) (requiere acceso al proyecto).
+[Ver la traza en Langfuse](https://us.cloud.langfuse.com/project/cmvzpl3kc022pad0dzr2g7ynp/traces/20cb2aa52647d7de7a79e30af3505998)
+(traza `20cb2aa52647d7de7a79e30af3505998`, sesión `e49b4c8e`; requiere acceso al proyecto).
 
 - La respuesta explicó la indemnización `(LFT, art. 48)` y dijo que los fragmentos no indican
   nada sobre aguinaldo ni prima vacacional.
